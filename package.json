@@ -1,0 +1,24 @@
+{
+  "name": "comp488-midterm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbaddoo/comp488-midterm.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bbaddoo/comp488-midterm/issues"
+  },
+  "homepage": "https://github.com/bbaddoo/comp488-midterm#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
