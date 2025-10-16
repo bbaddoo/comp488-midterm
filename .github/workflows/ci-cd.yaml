@@ -1,0 +1,71 @@
+name: CI/CD - build and deploy to Kubernetes
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  REGISTRY: ghcr.io
+  REPO: ${{ github.repository }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Build
+        uses: docker/setup-build-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPO }}-frontend:latest
+            ${{ env.REGISTRY }}/${{ env.REPO }}-frontend:${{ github.sha }}
+
+      - name: Build & Push Product API Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./product-api
+          file: ./product-api/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPO }}-product-api:latest
+            ${{ env.REGISTRY }}/${{ env.REPO }}-product-api:${{ github.sha }}
+
+      - name: Build & Push Order API Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./order-api
+          file: ./order-api/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPO }}-order-api:latest
+            ${{ env.REGISTRY }}/${{ env.REPO }}-order-api:${{ github.sha }}
+
+      - name: Set up kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Update image tags in k8s YAML
+        run: |
+          sed -i "s|image: .*frontend:.*|image: ${{ env.REGISTRY }}/${{ env.REPO }}-frontend:${{ github.sha }}|" ./k8s/*.yaml
+          sed -i "s|image: .*product-api:.*|image: ${{ env.REGISTRY }}/${{ env.REPO }}-product-api:${{ github.sha }}|" ./k8s/*.yaml
+          sed -i "s|image: .*order-api:.*|image: ${{ env.REGISTRY }}/${{ env.REPO }}-order-api:${{ github.sha }}|" ./k8s/*.yaml
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f ./k8s/
+
