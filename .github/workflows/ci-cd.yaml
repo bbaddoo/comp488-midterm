@@ -28,8 +28,8 @@ jobs:
       - name: Build & Push Frontend Image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.REPO }}-frontend:latest
