@@ -1,5 +1,8 @@
 Set up instructions and architecture overview:
 
+FINAL MODIFICATIONS: So, what i have done now forme the live commenting on my midterm is I have have added tunneling and logging to my website. I am using datadog for my visualization and ngrok for my tunneling with a public link. For datadog I used my secret and API key and launched it with kubectl apply -f datadog_agent.yaml -n datadog and kubectl get pods -n datadog to check the logs. I then downloaded ngrok and made the public server link for it to join and launched it with ngrok my port which is 3000. I also have my frontend monitoring with this my API key through datadog.
+
+
 -Cloning the provided repository and building out my docker images
 -ex for frontend: docker build -t comp-midterm:1.0 ./frontend
 -repeat for the order-api and product-api(make sure to use correct image name

@@ -1,0 +1,27 @@
+kind: "DatadogAgent"
+apiVersion: "datadoghq.com/v2alpha1"
+metadata:
+  name: "datadog"
+spec:
+  global:
+    site: "us5.datadoghq.com"       
+    credentials:
+      apiSecret:
+        secretName: "datadog-secret"   
+        keyName: "api-key"
+  features:
+    apm:
+      instrumentation:
+        enabled: true                  # Enables traces for your services
+        targets:
+          - name: "default-target"
+            ddTraceVersions:           # Language-specific tracer versions
+              java: "1"
+              python: "4"
+              js: "5"
+              php: "1"
+              dotnet: "3"
+              ruby: "2"
+    logCollection:
+      enabled: true                    # Collect logs from all containers
+      containerCollectAll: true
